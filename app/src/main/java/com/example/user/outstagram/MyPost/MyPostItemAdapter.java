@@ -1,31 +1,42 @@
 package com.example.user.outstagram.MyPost;
 
+
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.Request;
+
 import com.example.user.outstagram.Fragment.Fragment_Account;
 import com.example.user.outstagram.R;
 
 import java.util.List;
 
+
 public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.ViewHolder> {
     List<MyPostItem> myPostItem;
-    Fragment_Account context;
-    View view;
+    Context context;
+    private AdapterView.OnItemClickListener onItemClickListener;
 
-    public MyPostItemAdapter(List<MyPostItem> myPostItem, Fragment_Account context) {
+    public MyPostItemAdapter(List<MyPostItem> myPostItem, Context context) {
         this.myPostItem = myPostItem;
         this.context = context;
+    }
+
+    public MyPostItemAdapter(AdapterView.OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        public void onItemClick(View view, int position);
     }
 
     @NonNull
@@ -40,10 +51,21 @@ public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        MyPostItem item = myPostItem.get(position);
+        final MyPostItem item = myPostItem.get(position);
         MyPostItemAdapter.ViewHolder viewHolder = (MyPostItemAdapter.ViewHolder) holder;
-//      Glide.with(holder.itemView.getContext()).load(myPostItem.get(position).getPost_photo()).into(((ViewHolder)holder).post_photo);
-        Glide.with(holder.itemView.getContext()).load(item.getPost_photo()).into(holder.post_photo);
+
+        Glide.with(holder.itemView.getContext()).load(item.getImage()).into(holder.post_photo);
+        holder.post_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, MyPost.class);
+                intent.putExtra("image", item.getImage());
+                intent.putExtra("title",item.getTitle());
+                context.startActivity(intent);
+
+            }
+        });
+
     }
 
     @Override

@@ -72,6 +72,7 @@ public class WritePost extends AppCompatActivity {
     EditText posts;
     Button uplode;
     Context context = this;
+    int count=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +136,13 @@ public class WritePost extends AppCompatActivity {
             return;
         } else {
             Uri file = Uri.fromFile(new File(path));
-            StorageReference riversRef = storageRef.child("post").child(uid + ".jpg");
+            count = count+1;
+            StorageReference riversRef = storageRef.child("post").child(uid).child("image"+count+".jpg");
+
+            SharedPreferences sharedPreferences = getSharedPreferences("count", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("Count", count);
+            editor.apply();
 
             UploadTask uploadTask = riversRef.putFile(file);
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -154,10 +161,8 @@ public class WritePost extends AppCompatActivity {
 
                     Map<String, Object> postitem = new HashMap<>();
 
-                    postitem.put("Uphoto", Uphoto);
-                    postitem.put("Unickname", Unickname);
-                    postitem.put("Post_photo", photoUri);
-                    postitem.put("Posts", posts.getText().toString());
+                    postitem.put("image", photoUri);
+                    postitem.put("title", posts.getText().toString());
 
                     myRef.child(uid).push().setValue(postitem);
             }

@@ -80,7 +80,6 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                                 profile.put("following",following);
                                 profile.put("followers", followers);
                                 profile.put("posts",posts);
-                               // profile.put("post","");
                                 myRef.child(user.getUid()).setValue(profile);
                                 System.out.println("UserUid : " + user.getUid());
                             }

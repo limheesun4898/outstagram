@@ -1,18 +1,29 @@
 package com.example.user.outstagram.MyPost;
 
 public class MyPostItem {
-    String Post_photo;
+    String image;
+    String title;
+    public MyPostItem(){
 
-    public MyPostItem(String post_photo) {
-        Post_photo = post_photo;
+    }
+    public MyPostItem(String image, String title) {
+        this.image = image;
+        this.title = title;
     }
 
-    public String getPost_photo() {
-        return Post_photo;
+    public String getImage() {
+        return image;
     }
 
-    public void setPost_photo(String post_photo) {
-        Post_photo = post_photo;
+    public void setImage(String image) {
+        this.image = image;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
