@@ -24,6 +24,10 @@ public class Fragment_Home extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
         Button button = view.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,10 +36,16 @@ public class Fragment_Home extends Fragment {
                 startActivity(intent);
             }
         });
+        Button button1 = view.findViewById(R.id.logout);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.getInstance().signOut();
+
+            }
+        });
 
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
 
         return view;
     }

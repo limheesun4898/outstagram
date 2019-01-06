@@ -53,7 +53,6 @@ public class Fragment_Account extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
         mAuth = FirebaseAuth.getInstance();
