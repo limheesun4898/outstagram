@@ -24,11 +24,14 @@ import java.util.List;
 public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.ViewHolder> {
     List<MyPostItem> myPostItem;
     Context context;
+    String stnickanme, stphoto;
     private AdapterView.OnItemClickListener onItemClickListener;
 
-    public MyPostItemAdapter(List<MyPostItem> myPostItem, Context context) {
+    public MyPostItemAdapter(List<MyPostItem> myPostItem, Context context,String stnickanme, String stphoto) {
         this.myPostItem = myPostItem;
         this.context = context;
+        this.stnickanme = stnickanme;
+        this.stphoto = stphoto;
     }
 
     public MyPostItemAdapter(AdapterView.OnItemClickListener onItemClickListener) {
