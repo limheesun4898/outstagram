@@ -1,7 +1,6 @@
 package com.example.user.outstagram.Fragment;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.user.outstagram.R;
-import com.example.user.outstagram.UserAccount;
+import com.example.user.outstagram.UserPost.UserAccount;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

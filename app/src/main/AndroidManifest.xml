@@ -41,7 +41,8 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".MyPost.WritePost" />
         <activity android:name=".MyPost.MyPost" />
-        <activity android:name=".UserAccount"></activity>
+        <activity android:name=".UserPost.UserAccount" />
+        <activity android:name=".UserPost.UserPost"></activity>
     </application>
 
 </manifest>

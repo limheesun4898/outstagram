@@ -1,9 +1,10 @@
-package com.example.user.outstagram.MyPost;
+package com.example.user.outstagram.UserPost;
 
-public class MyPostItem {
+public class UserPostItem {
     String image;
     String title;
-    public MyPostItem(){
+
+    public UserPostItem() {
 
     }
 

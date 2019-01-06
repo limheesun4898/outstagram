@@ -1,11 +1,10 @@
-package com.example.user.outstagram.MyPost;
+package com.example.user.outstagram.UserPost;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,21 +20,20 @@ import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MyPost extends AppCompatActivity {
+public class UserPost extends AppCompatActivity {
     TextView nickname, favorite_count, title;
     CircleImageView photo;
     ImageView image,favorite;
     ImageButton chat,back;
 
     String Uimage, Utitle;
-    SharedPreferences sharedPreferences;
     String stUid;
     Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_post);
+        setContentView(R.layout.activity_user_post);
 
         nickname = findViewById(R.id.nickname);
         favorite_count = findViewById(R.id.favorite_count);
@@ -52,19 +50,13 @@ public class MyPost extends AppCompatActivity {
             }
         });
 
-        try {
-            sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-            stUid = sharedPreferences.getString("Uid", "");
-            System.out.println("userUid : " + stUid);
-        } catch (NullPointerException e) {
+        stUid = getIntent().getStringExtra("uid");
 
-        }
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
         myRef.child("users").child(stUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 String stNickname = dataSnapshot.child("nickname").getValue().toString();
                 String stPhoto = dataSnapshot.child("photo").getValue().toString();
 
@@ -82,6 +74,5 @@ public class MyPost extends AppCompatActivity {
 
         title.setText(Utitle);
         Glide.with(this).load(Uimage).into(image);
-
     }
 }

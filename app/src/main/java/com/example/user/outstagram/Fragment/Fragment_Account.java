@@ -134,8 +134,4 @@ public class Fragment_Account extends Fragment {
         return view;
     }
 
-    public void add() {
-
-    }
-
 }

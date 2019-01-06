@@ -1,5 +1,4 @@
-package com.example.user.outstagram.MyPost;
-
+package com.example.user.outstagram.UserPost;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,29 +11,30 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-
 import com.bumptech.glide.Glide;
-
-import com.example.user.outstagram.Fragment.Fragment_Account;
+import com.example.user.outstagram.MyPost.MyPost;
+import com.example.user.outstagram.MyPost.MyPostItem;
+import com.example.user.outstagram.MyPost.MyPostItemAdapter;
 import com.example.user.outstagram.R;
 
 import java.util.List;
 
-
-public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.ViewHolder> {
-    List<MyPostItem> myPostItem;
+public class UserAccountAdapter extends RecyclerView.Adapter<UserAccountAdapter.ViewHolder> {
+    List<UserPostItem> userPostItemList;
     Context context;
     String stnickanme, stphoto;
     private AdapterView.OnItemClickListener onItemClickListener;
+    String stUid;
 
-    public MyPostItemAdapter(List<MyPostItem> myPostItem, Context context,String stnickanme, String stphoto) {
-        this.myPostItem = myPostItem;
+    public UserAccountAdapter(List<UserPostItem> userPostItemList, Context context,String stnickanme, String stphoto, String stUid) {
+        this.userPostItemList = userPostItemList;
         this.context = context;
         this.stnickanme = stnickanme;
         this.stphoto = stphoto;
+        this.stUid = stUid;
     }
 
-    public MyPostItemAdapter(AdapterView.OnItemClickListener onItemClickListener) {
+    public UserAccountAdapter(AdapterView.OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -44,28 +44,26 @@ public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.Vi
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+    public UserAccountAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         int width = parent.getResources().getDisplayMetrics().widthPixels / 3;
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.mypost, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.userpost, parent, false);
         view.setLayoutParams(new LinearLayout.LayoutParams(width, width));
-        MyPostItemAdapter.ViewHolder holder = new ViewHolder(view);
+        UserAccountAdapter.ViewHolder holder = new UserAccountAdapter.ViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final MyPostItem item = myPostItem.get(position);
-        MyPostItemAdapter.ViewHolder viewHolder = (MyPostItemAdapter.ViewHolder) holder;
+    public void onBindViewHolder(@NonNull UserAccountAdapter.ViewHolder holder, int position) {
+        final UserPostItem item = userPostItemList.get(position);
 
         Glide.with(holder.itemView.getContext()).load(item.getImage()).into(holder.post_photo);
         holder.post_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, MyPost.class);
+                Intent intent = new Intent(context, UserPost.class);
                 intent.putExtra("image", item.getImage());
                 intent.putExtra("title",item.getTitle());
-                intent.putExtra("nickname",stnickanme);
-                intent.putExtra("photo",stphoto);
+                intent.putExtra("uid",stUid);
                 context.startActivity(intent);
 
             }
@@ -75,7 +73,7 @@ public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return myPostItem.size();
+        return userPostItemList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -83,7 +81,8 @@ public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.Vi
 
         public ViewHolder(View itemView) {
             super(itemView);
-            post_photo = itemView.findViewById(R.id.mypost_item);
+            post_photo = itemView.findViewById(R.id.userpost_item);
         }
     }
+
 }
