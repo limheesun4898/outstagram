@@ -86,7 +86,7 @@
             android:layout_marginTop="5dp">
 
             <ImageView
-                android:id="@+id/favorite"
+                android:id="@+id/star"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="15dp"

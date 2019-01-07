@@ -69,19 +69,26 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                                 Uname = name;
                                 Uemail = email;
                                 Unickname = nickname;
-                                String following = "0";
-                                String followers ="0";
-                                String posts = "0";
-                                Hashtable<String, String> profile = new Hashtable<String, String>();
-                                profile.put("name", Uname);
-                                profile.put("email", Uemail);
-                                profile.put("nickname",Unickname);
-                                profile.put("photo", "https://firebasestorage.googleapis.com/v0/b/how-about-a-cafe.appspot.com/o/users%2Faccount.png?alt=media&token=187d46ea-019f-487f-97b6-3a2305272630");
-                                profile.put("following",following);
-                                profile.put("followers", followers);
-                                profile.put("posts",posts);
-                                myRef.child(user.getUid()).setValue(profile);
-                                System.out.println("UserUid : " + user.getUid());
+//                                String following = "0";
+//                                String followers ="0";
+//                                String posts = "0";
+//                                Hashtable<String, String> profile = new Hashtable<String, String>();
+//                                profile.put("name", Uname);
+//                                profile.put("email", Uemail);
+//                                profile.put("nickname",Unickname);
+//                                profile.put("photo", "https://firebasestorage.googleapis.com/v0/b/how-about-a-cafe.appspot.com/o/users%2Faccount.png?alt=media&token=187d46ea-019f-487f-97b6-3a2305272630");
+//                                profile.put("following",following);
+//                                profile.put("followers", followers);
+//                                profile.put("posts",posts);
+//                                myRef.child(user.getUid()).setValue(profile);
+
+                                UserItem userItem = new UserItem();
+                                userItem.setName(Uname);
+                                userItem.setEmail(Uemail);
+                                userItem.setNickname(Unickname);
+                                userItem.setPhoto("https://firebasestorage.googleapis.com/v0/b/how-about-a-cafe.appspot.com/o/users%2Faccount.png?alt=media&token=187d46ea-019f-487f-97b6-3a2305272630");
+                                myRef.child(user.getUid()).setValue(userItem);
+
                             }
 
                             Toast.makeText(Signup.this, "이메일 회원가입에 성공하였습니다.", Toast.LENGTH_SHORT).show();

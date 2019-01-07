@@ -1,9 +1,13 @@
 package com.example.user.outstagram.MyPost;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MyPostItem {
     String image;
     String title;
     String formatDate;
+
     public MyPostItem(){
 
     }

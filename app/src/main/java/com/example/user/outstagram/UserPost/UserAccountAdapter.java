@@ -2,6 +2,7 @@ package com.example.user.outstagram.UserPost;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,22 +17,26 @@ import com.example.user.outstagram.MyPost.MyPost;
 import com.example.user.outstagram.MyPost.MyPostItem;
 import com.example.user.outstagram.MyPost.MyPostItemAdapter;
 import com.example.user.outstagram.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
 public class UserAccountAdapter extends RecyclerView.Adapter<UserAccountAdapter.ViewHolder> {
     List<UserPostItem> userPostItemList;
+    List<String> useruidList;
     Context context;
     String stnickanme, stphoto;
     private AdapterView.OnItemClickListener onItemClickListener;
-    String stUid;
+    String UserUid;
 
-    public UserAccountAdapter(List<UserPostItem> userPostItemList, Context context,String stnickanme, String stphoto, String stUid) {
+
+    public UserAccountAdapter(List<UserPostItem> userPostItemList, Context context, String stnickanme, String stphoto, String useruid, List<String> useruidList) {
         this.userPostItemList = userPostItemList;
         this.context = context;
         this.stnickanme = stnickanme;
         this.stphoto = stphoto;
-        this.stUid = stUid;
+        this.UserUid = useruid;
+        this.useruidList = useruidList;
     }
 
     public UserAccountAdapter(AdapterView.OnItemClickListener onItemClickListener) {
@@ -53,17 +58,18 @@ public class UserAccountAdapter extends RecyclerView.Adapter<UserAccountAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserAccountAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         final UserPostItem item = userPostItemList.get(position);
-
         Glide.with(holder.itemView.getContext()).load(item.getImage()).into(holder.post_photo);
+
         holder.post_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, UserPost.class);
                 intent.putExtra("image", item.getImage());
-                intent.putExtra("title",item.getTitle());
-                intent.putExtra("uid",stUid);
+                intent.putExtra("title", item.getTitle());
+                intent.putExtra("key", useruidList.get(position));
+                intent.putExtra("uid", UserUid);
                 context.startActivity(intent);
 
             }

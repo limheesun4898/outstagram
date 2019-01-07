@@ -66,7 +66,6 @@ public class EditActivity extends AppCompatActivity {
     public static DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
     String uid;
     SharedPreferences sharedPreferences;
-
     String Uimage, Utitle, stformatDate;
     ImageView image;
     EditText title;
@@ -92,6 +91,7 @@ public class EditActivity extends AppCompatActivity {
             sharedPreferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
             uid = sharedPreferences.getString("Uid", "");
             System.out.println("userUid : " + uid);
+
             firebaseDatabase.child("post").child(uid).child(stformatDate).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -172,7 +172,7 @@ public class EditActivity extends AppCompatActivity {
                 Map<String, Object> postitem = new HashMap<>();
 
                 postitem.put("image", photoUri);
-                postitem.put("title",Utitle);
+                postitem.put("title", Utitle);
                 postitem.put("formatDate", formatDate);
 
                 myRef.child(uid).child(formatDate).setValue(postitem);

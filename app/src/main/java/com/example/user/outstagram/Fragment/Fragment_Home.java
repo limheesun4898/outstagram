@@ -28,23 +28,13 @@ public class Fragment_Home extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        Button button = view.findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), WritePost.class);
-                startActivity(intent);
-            }
-        });
         Button button1 = view.findViewById(R.id.logout);
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mAuth.getInstance().signOut();
-
             }
         });
-
 
 
         return view;
@@ -53,12 +43,10 @@ public class Fragment_Home extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (user == null){
+        if (user == null) {
             Intent intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
-
-        }
-        else{
+        } else {
 
         }
     }

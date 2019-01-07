@@ -7,11 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="home"/>
-    <Button
-        android:id="@+id/button"
-        android:text="게시물 작성"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/logout"
         android:layout_width="match_parent"

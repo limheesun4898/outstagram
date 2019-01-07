@@ -24,6 +24,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -33,30 +35,47 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyPost extends AppCompatActivity {
     TextView nickname, favorite_count, title;
     CircleImageView photo;
-    ImageView image, favorite, mypost_menubtn;
+    ImageView image, star, mypost_menubtn;
     ImageButton chat, back;
-
-    String Uimage, Utitle,stUid, stformatDate;
+    String Uimage, Utitle, stUid, stformatDate;
     SharedPreferences sharedPreferences;
     Context context = this;
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+    SharedPreferences sharedcount;
+    int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_post);
 
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+
         nickname = findViewById(R.id.nickname);
         favorite_count = findViewById(R.id.favorite_count);
         title = findViewById(R.id.title);
         photo = findViewById(R.id.photo);
         image = findViewById(R.id.image);
-        favorite = findViewById(R.id.favorite);
         chat = findViewById(R.id.chat);
         back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+
+        sharedcount = getApplicationContext().getSharedPreferences("count", Context.MODE_PRIVATE);
+        count = sharedcount.getInt("Count", 0);
+
+        star = findViewById(R.id.star);
+        star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -77,7 +96,7 @@ public class MyPost extends AppCompatActivity {
                                 Intent intent = new Intent(context, EditActivity.class);
                                 intent.putExtra("formatDate", stformatDate);
                                 context.startActivity(intent);
-                                ((Activity)context).finish();
+                                ((Activity) context).finish();
                                 break;
                         }
                         return false;
@@ -97,12 +116,10 @@ public class MyPost extends AppCompatActivity {
         try {
             sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
             stUid = sharedPreferences.getString("Uid", "");
-            System.out.println("userUid : " + stUid);
         } catch (NullPointerException e) {
 
         }
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
+
         myRef.child("users").child(stUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -133,6 +150,7 @@ public class MyPost extends AppCompatActivity {
 
                         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
                         mStorage.child("post").child(stUid).child(stformatDate).delete();
+                        count = count-1;
                         onBackPressed();
                     }
                 }).setNegativeButton("취소",
@@ -145,4 +163,5 @@ public class MyPost extends AppCompatActivity {
         AlertDialog alert = alert_confirm.create();
         alert.show();
     }
+
 }
