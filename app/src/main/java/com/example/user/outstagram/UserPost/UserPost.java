@@ -25,7 +25,6 @@ public class UserPost extends AppCompatActivity {
     CircleImageView photo;
     ImageView image,favorite;
     ImageButton chat,back;
-
     String Uimage, Utitle;
     String stUid;
     Context context = this;

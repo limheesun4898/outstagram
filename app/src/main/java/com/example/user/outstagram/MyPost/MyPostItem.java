@@ -3,6 +3,7 @@ package com.example.user.outstagram.MyPost;
 public class MyPostItem {
     String image;
     String title;
+    String formatDate;
     public MyPostItem(){
 
     }
@@ -22,4 +23,12 @@ public class MyPostItem {
     public void setTitle(String title) {
         this.title = title;
     }
+    public String getFormatDate() {
+        return formatDate;
+    }
+
+    public void setFormatDate(String formatDate) {
+        this.formatDate = formatDate;
+    }
+
 }

@@ -191,7 +191,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             profile.put("following",following);
                             profile.put("followers", followers);
                             profile.put("posts",posts);
-                            //profile.put("post","");
                             myRef.child(user.getUid()).setValue(profile);
 
                             startActivity(new Intent(Login.this, MainActivity.class));

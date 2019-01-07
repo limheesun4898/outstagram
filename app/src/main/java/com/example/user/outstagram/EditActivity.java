@@ -1,4 +1,4 @@
-package com.example.user.outstagram.MyPost;
+package com.example.user.outstagram;
 
 import android.Manifest;
 import android.app.Activity;
@@ -32,8 +32,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.user.outstagram.MainActivity;
-import com.example.user.outstagram.R;
+import com.example.user.outstagram.Fragment.Fragment_Account;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -50,14 +49,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-public class WritePost extends AppCompatActivity {
-    public static DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-    String uid;
-    SharedPreferences sharedPreferences;
-
+public class EditActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_CAMERA = 1111;
     private static final int REQUEST_TAKE_PHOTO = 2222;
     private static final int REQUEST_TAKE_ALBUM = 3333;
@@ -67,12 +63,15 @@ public class WritePost extends AppCompatActivity {
     Uri photoURI;
     Uri albumURI;
     String realpath;
-    String Unickname, Uphoto;
-    ImageView post_photo;
-    EditText posts;
+    public static DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+    String uid;
+    SharedPreferences sharedPreferences;
+
+    String Uimage, Utitle, stformatDate;
+    ImageView image;
+    EditText title;
     Button uplode;
     Context context = this;
-    int count=0;
 
     long now = System.currentTimeMillis();
     Date date = new Date(now);
@@ -82,17 +81,25 @@ public class WritePost extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_write_post);
+        setContentView(R.layout.activity_edit);
+
+        image = findViewById(R.id.image);
+        title = findViewById(R.id.title);
+        uplode = findViewById(R.id.uplode);
+        stformatDate = getIntent().getStringExtra("formatDate");
 
         try {
             sharedPreferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
             uid = sharedPreferences.getString("Uid", "");
             System.out.println("userUid : " + uid);
-            firebaseDatabase.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            firebaseDatabase.child("post").child(uid).child(stformatDate).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Unickname = dataSnapshot.child("nickname").getValue().toString();
-                    Uphoto = dataSnapshot.child("photo").getValue().toString();
+                    Uimage = dataSnapshot.child("image").getValue().toString();
+                    Utitle = dataSnapshot.child("title").getValue().toString();
+
+                    Glide.with(getApplicationContext()).load(Uimage).into(image);
+                    title.setText(Utitle);
                 }
 
                 @Override
@@ -101,30 +108,28 @@ public class WritePost extends AppCompatActivity {
                 }
             });
         } catch (NullPointerException e) {
-            Log.e("OMG ", "사용자 계정 안 넘어옴");
-        }
 
-        checkPermission();
+        }
 
         //사진 찍고 회전 막아줌.
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transform(new RoundedCorners(15));
 
-        post_photo = findViewById(R.id.post_photo);
-        posts = findViewById(R.id.posts);
-        uplode = findViewById(R.id.uplode);
         //게시물 등록
         uplode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (null != post_photo.getDrawable()) {
-                    uploadImage();
-//                  getFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment_Account()).commit();
-                    Intent intent = new Intent(WritePost.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                if (null == image.getDrawable()) {
+                    Toast.makeText(EditActivity.this, "사진을 넣으시오", Toast.LENGTH_SHORT).show();
+                } else if (Utitle.isEmpty()) {
+                    Toast.makeText(context, "내용을 입력하세요.", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(WritePost.this, "사진을 넣으시오", Toast.LENGTH_SHORT).show();
+                    // getFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment_Account()).commit();
+                    uploadImage();
+//                    Intent intent = new Intent(EditActivity.this, MainActivity.class);
+//                    startActivity(intent);
+//                    finish();
+                    onBackPressed();
                 }
             }
         });
@@ -133,48 +138,47 @@ public class WritePost extends AppCompatActivity {
     }
 
     public void uploadImage() {
+        Utitle = title.getText().toString();
+        //먼저 수정 전의 테이블을 삭제.
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference().child("post").child(uid).child(stformatDate).removeValue();
+
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        mStorage.child("post").child(uid).child(stformatDate).delete();
+
+        //수정 후 수정 시간 키(formatDate)로 올려준다
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         String path = null;
         path = realpath;
-        if (path == null) {
-            return;
-        } else {
-            Uri file = Uri.fromFile(new File(path));
-            count = count+1;
-            StorageReference riversRef = storageRef.child("post").child(uid).child(formatDate);
 
-            SharedPreferences sharedPreferences = getSharedPreferences("count", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("Count", count);
-            editor.apply();
-
-            UploadTask uploadTask = riversRef.putFile(file);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @SuppressWarnings("VisibleForTests")
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadUri = taskSnapshot.getDownloadUrl();
-                    String photoUri = String.valueOf(downloadUri);
-
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("post");
-
-                    Map<String, Object> postitem = new HashMap<>();
-
-                    postitem.put("image", photoUri);
-                    postitem.put("title", posts.getText().toString());
-                    postitem.put("formatDate",formatDate);
-
-                    myRef.child(uid).child(formatDate).setValue(postitem);
+        Uri file = Uri.fromFile(new File(path));
+        StorageReference riversRef = storageRef.child("post").child(uid).child(formatDate);
+        UploadTask uploadTask = riversRef.putFile(file);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
             }
-            });
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @SuppressWarnings("VisibleForTests")
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUri = taskSnapshot.getDownloadUrl();
+                String photoUri = String.valueOf(downloadUri);
 
-        }
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("post");
+
+                Map<String, Object> postitem = new HashMap<>();
+
+                postitem.put("image", photoUri);
+                postitem.put("title",Utitle);
+                postitem.put("formatDate", formatDate);
+
+                myRef.child(uid).child(formatDate).setValue(postitem);
+            }
+        });
+
 
     }
 
@@ -290,7 +294,7 @@ public class WritePost extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     try {
                         cropSingleImage(imageUri);
-                        Glide.with(this).load(imageUri).apply(requestOptions).into(post_photo);
+                        Glide.with(this).load(imageUri).apply(requestOptions).into(image);
                         realpath = getRealPathFromURI(imageUri);
                     } catch (Exception e) {
 
@@ -308,7 +312,7 @@ public class WritePost extends AppCompatActivity {
                             albumFile = creatImageFile();
                             photoURI = data.getData();
                             albumURI = Uri.fromFile(albumFile);
-                           cropImage();
+                            cropImage();
                         } catch (IOException e) {
 
                         }
@@ -318,7 +322,7 @@ public class WritePost extends AppCompatActivity {
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
                     galleryAddpic();
-                    Glide.with(this).load(albumURI).apply(requestOptions).into(post_photo);
+                    Glide.with(this).load(albumURI).apply(requestOptions).into(image);
                     realpath = getRealPathFromURI(albumURI);
                 }
                 break;
@@ -368,49 +372,5 @@ public class WritePost extends AppCompatActivity {
 
     }
 
-    public void checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // 처음 호출시엔 if 안의 부분은 false로 리턴, else 의 요청으로 넘어감
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) ||
-                    (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA))) {
-                new android.support.v7.app.AlertDialog.Builder(this)
-                        .setTitle("알림")
-                        .setMessage("저장소 권한이 거부되었습니다. 사용을 원하시면 설정에서 해당 권한을 직접 허용하셔야 합니다.")
-                        .setNeutralButton("설정", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                intent.setData(Uri.parse("package:" + getPackageName()));
-                                startActivity(intent);
-                            }
-                        })
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        })
-                        .setCancelable(false)
-                        .create()
-                        .show();
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, MY_PERMISSION_CAMERA);
-            }
-        }
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSION_CAMERA:
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] < 0) {
-                        Toast.makeText(this, "해당 권한을 활성화 하셔야 합니다.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
-
-                break;
-        }
-    }
 }

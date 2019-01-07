@@ -64,6 +64,7 @@ public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.Vi
                 Intent intent = new Intent(context, MyPost.class);
                 intent.putExtra("image", item.getImage());
                 intent.putExtra("title",item.getTitle());
+                intent.putExtra("formatDate",item.getFormatDate());
                 intent.putExtra("nickname",stnickanme);
                 intent.putExtra("photo",stphoto);
                 context.startActivity(intent);
