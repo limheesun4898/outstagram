@@ -120,7 +120,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             }
                         } else {
                             //로그인 성공
-                            startActivity(new Intent(Login.this, MainActivity.class));
+                            Intent intent = new Intent(Login.this, MainActivity.class);
+                            startActivity(intent);
                             finish();
                         }
                     }

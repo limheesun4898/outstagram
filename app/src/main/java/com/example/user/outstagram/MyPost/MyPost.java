@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,14 +17,12 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.user.outstagram.EditActivity;
 import com.example.user.outstagram.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,15 +32,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyPost extends AppCompatActivity {
     TextView nickname, favorite_count, title;
     CircleImageView photo;
-    ImageView image, star, mypost_menubtn;
+    ImageView image, mypost_menubtn;
     ImageButton chat, back;
     String Uimage, Utitle, stUid, stformatDate;
-    SharedPreferences sharedPreferences;
+    int ststarCount;
     Context context = this;
     FirebaseDatabase database;
     DatabaseReference myRef;
-    SharedPreferences sharedcount;
-    int count;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +49,7 @@ public class MyPost extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
+        stUid = auth.getCurrentUser().getUid();
 
         nickname = findViewById(R.id.nickname);
         favorite_count = findViewById(R.id.favorite_count);
@@ -64,18 +62,6 @@ public class MyPost extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
-            }
-        });
-
-
-        sharedcount = getApplicationContext().getSharedPreferences("count", Context.MODE_PRIVATE);
-        count = sharedcount.getInt("Count", 0);
-
-        star = findViewById(R.id.star);
-        star.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
             }
         });
 
@@ -109,16 +95,12 @@ public class MyPost extends AppCompatActivity {
         Utitle = getIntent().getStringExtra("title");
         Uimage = getIntent().getStringExtra("image");
         stformatDate = getIntent().getStringExtra("formatDate");
+        ststarCount = getIntent().getIntExtra("starCount",0);
 
         title.setText(Utitle);
         Glide.with(this).load(Uimage).into(image);
+        favorite_count.setText(String.valueOf(ststarCount));
 
-        try {
-            sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-            stUid = sharedPreferences.getString("Uid", "");
-        } catch (NullPointerException e) {
-
-        }
 
         myRef.child("users").child(stUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -150,7 +132,6 @@ public class MyPost extends AppCompatActivity {
 
                         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
                         mStorage.child("post").child(stUid).child(stformatDate).delete();
-                        count = count-1;
                         onBackPressed();
                     }
                 }).setNegativeButton("취소",

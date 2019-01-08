@@ -1,9 +1,9 @@
-package com.example.user.outstagram.MyPost;
+package com.example.user.outstagram.FollowingPost;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MyPostItem {
+public class FollowingPost {
     String image;
     String title;
     String formatDate;
@@ -11,7 +11,7 @@ public class MyPostItem {
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
 
-    public MyPostItem(){
+    public FollowingPost(){
 
     }
 

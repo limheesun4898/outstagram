@@ -24,6 +24,7 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -124,6 +125,7 @@ public class UserAccount extends AppCompatActivity {
                         String key = snapshot.getKey();
                         UserPostItem userPostItem = snapshot.getValue(UserPostItem.class);
                         itemArrayList.add(userPostItem);
+                        Collections.reverse(itemArrayList);
                         uidList.add(key);
                     }
                     userAccountAdapter.notifyDataSetChanged();

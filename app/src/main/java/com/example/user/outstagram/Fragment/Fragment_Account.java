@@ -8,19 +8,22 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import android.support.v4.app.INotificationSideChannel;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import com.example.user.outstagram.Login.Login;
 import com.example.user.outstagram.Login.UserItem;
-import com.example.user.outstagram.MyPost.MyPost;
+import com.example.user.outstagram.MyPost.Account_photo_edit;
 import com.example.user.outstagram.MyPost.MyPostItem;
 import com.example.user.outstagram.MyPost.MyPostItemAdapter;
 import com.example.user.outstagram.MyPost.WritePost;
@@ -34,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,9 +46,7 @@ public class Fragment_Account extends Fragment {
     TextView Unickname, Uname, Uemail, follower, posts, following;
     CircleImageView Uphoto;
     SharedPreferences sharedPreferences;
-    SharedPreferences sharedcount;
     String stUid;
-    int count;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private FirebaseDatabase database;
@@ -52,6 +54,7 @@ public class Fragment_Account extends Fragment {
     RecyclerView recyclerView;
     String stNickname, stPhoto;
     Button write;
+    ImageView account_edit;
 
     @Nullable
     @Override
@@ -69,6 +72,8 @@ public class Fragment_Account extends Fragment {
         posts = view.findViewById(R.id.posts);
         follower = view.findViewById(R.id.follower);
         following = view.findViewById(R.id.following);
+        account_edit = view.findViewById(R.id.account_edit);
+
         write = view.findViewById(R.id.write);
         write.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,16 +86,10 @@ public class Fragment_Account extends Fragment {
         try {
             sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
             stUid = sharedPreferences.getString("Uid", "");
-            System.out.println("userUid : " + stUid);
         } catch (NullPointerException e) {
 
         }
         try {
-            sharedcount = getActivity().getSharedPreferences("count", Context.MODE_PRIVATE);
-            count = sharedcount.getInt("Count", 0);
-            System.out.println("Count : " + count);
-
-            posts.setText(String.valueOf(count));
 
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference();
@@ -133,6 +132,7 @@ public class Fragment_Account extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         MyPostItem myPostItem = snapshot.getValue(MyPostItem.class);
                         itemList.add(myPostItem);
+                        Collections.reverse(itemList);
                         posts.setText(String.valueOf(itemList.size()));
                     }
                     myPostItemAdapter.notifyDataSetChanged();
@@ -146,6 +146,32 @@ public class Fragment_Account extends Fragment {
         } catch (NullPointerException e) {
 
         }
+
+        account_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                PopupMenu popupMenu = new PopupMenu( getContext() ,account_edit);
+                popupMenu.inflate(R.menu.account_edit);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.account_photo_edit:
+                                Intent intent = new Intent(getActivity(), Account_photo_edit.class);
+                                intent.putExtra("uid",stUid);
+                                startActivity(intent);
+                                break;
+                            case R.id.logout:
+                                mAuth.signOut();
+                                startActivity(new Intent(getActivity(), Login.class));
+                                getActivity().finish();
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
 
         return view;
     }

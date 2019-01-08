@@ -43,7 +43,8 @@
         <activity android:name=".MyPost.MyPost" />
         <activity android:name=".UserPost.UserAccount" />
         <activity android:name=".UserPost.UserPost" />
-        <activity android:name=".EditActivity"></activity>
+        <activity android:name=".MyPost.EditActivity" />
+        <activity android:name=".MyPost.Account_photo_edit"></activity>
     </application>
 
 </manifest>

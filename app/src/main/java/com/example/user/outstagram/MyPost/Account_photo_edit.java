@@ -32,15 +32,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.user.outstagram.Fragment.Fragment_Account;
 import com.example.user.outstagram.MainActivity;
 import com.example.user.outstagram.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,10 +52,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WritePost extends AppCompatActivity {
-    public static DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-    String uid;
-    SharedPreferences sharedPreferences;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+public class Account_photo_edit extends AppCompatActivity {
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private static final int MY_PERMISSION_CAMERA = 1111;
     private static final int REQUEST_TAKE_PHOTO = 2222;
@@ -67,64 +66,36 @@ public class WritePost extends AppCompatActivity {
     Uri photoURI;
     Uri albumURI;
     String realpath;
-    String Unickname, Uphoto;
-    ImageView post_photo;
-    EditText posts;
-    Button uplode;
-    Context context = this;
-    int count=0;
 
-    long now = System.currentTimeMillis();
-    Date date = new Date(now);
-    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd (HH:mm:ss)");
-    String formatDate = sdfDate.format(date);
+    String stUid, Uphoto;
+    CircleImageView photo;
+    Button uplode_btn;
+    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_write_post);
-
-        try {
-            sharedPreferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-            uid = sharedPreferences.getString("Uid", "");
-            System.out.println("userUid : " + uid);
-            firebaseDatabase.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Unickname = dataSnapshot.child("nickname").getValue().toString();
-                    Uphoto = dataSnapshot.child("photo").getValue().toString();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        } catch (NullPointerException e) {
-            Log.e("OMG ", "사용자 계정 안 넘어옴");
-        }
+        setContentView(R.layout.activity_accoutn_photo_edit);
 
         checkPermission();
+
+        stUid = getIntent().getStringExtra("uid");
 
         //사진 찍고 회전 막아줌.
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transform(new RoundedCorners(15));
 
-        post_photo = findViewById(R.id.post_photo);
-        posts = findViewById(R.id.posts);
-        uplode = findViewById(R.id.uplode);
+        photo = findViewById(R.id.photo);
+        uplode_btn = findViewById(R.id.uplode_btn);
         //게시물 등록
-        uplode.setOnClickListener(new View.OnClickListener() {
+        uplode_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (null != post_photo.getDrawable()) {
+                if (null != photo.getDrawable()) {
                     uploadImage();
-//                  getFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment_Account()).commit();
-                    Intent intent = new Intent(WritePost.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    onBackPressed();
                 } else {
-                    Toast.makeText(WritePost.this, "사진을 넣으시오", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Account_photo_edit.this, "사진을 넣으시오", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -141,7 +112,9 @@ public class WritePost extends AppCompatActivity {
             return;
         } else {
             Uri file = Uri.fromFile(new File(path));
-            StorageReference riversRef = storageRef.child("post").child(uid).child(formatDate);
+
+            StorageReference riversRef = storageRef.child("users").child(stUid).child("photo");
+
 
             UploadTask uploadTask = riversRef.putFile(file);
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -156,16 +129,14 @@ public class WritePost extends AppCompatActivity {
                     String photoUri = String.valueOf(downloadUri);
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("post");
+                    DatabaseReference myRef = database.getReference("users");
 
                     Map<String, Object> postitem = new HashMap<>();
 
-                    postitem.put("image", photoUri);
-                    postitem.put("title", posts.getText().toString());
-                    postitem.put("formatDate",formatDate);
+                    postitem.put("photo", photoUri);
 
-                    myRef.child(uid).child(formatDate).setValue(postitem);
-            }
+                    myRef.child(stUid).updateChildren(postitem);
+                }
             });
 
         }
@@ -255,9 +226,11 @@ public class WritePost extends AppCompatActivity {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
+        //이 부분 핸드폰 갤러리 저장됨
 //        mediaScanIntent.setData(contentUri);
 //        sendBroadcast(mediaScanIntent);
 //        Toast.makeText(this, "사진이 앨범에 저장되었습니다.", Toast.LENGTH_SHORT).show();
+
     }
 
     public void cropImage() {
@@ -266,8 +239,8 @@ public class WritePost extends AppCompatActivity {
         cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         cropIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         cropIntent.setDataAndType(photoURI, "image/*");
-        cropIntent.putExtra("aspectX", true);
-        cropIntent.putExtra("aspectY", true);
+        cropIntent.putExtra("aspectX", 1);
+        cropIntent.putExtra("aspectY", 1);
         cropIntent.putExtra("scale", true);
         cropIntent.putExtra("output", albumURI);
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
@@ -284,7 +257,7 @@ public class WritePost extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     try {
                         cropSingleImage(imageUri);
-                        Glide.with(this).load(imageUri).apply(requestOptions).into(post_photo);
+                        Glide.with(this).load(imageUri).apply(requestOptions).into(photo);
                         realpath = getRealPathFromURI(imageUri);
                     } catch (Exception e) {
 
@@ -302,7 +275,7 @@ public class WritePost extends AppCompatActivity {
                             albumFile = creatImageFile();
                             photoURI = data.getData();
                             albumURI = Uri.fromFile(albumFile);
-                           cropImage();
+                            cropImage();
                         } catch (IOException e) {
 
                         }
@@ -312,7 +285,7 @@ public class WritePost extends AppCompatActivity {
             case REQUEST_IMAGE_CROP:
                 if (resultCode == Activity.RESULT_OK) {
                     galleryAddpic();
-                    Glide.with(this).load(albumURI).apply(requestOptions).into(post_photo);
+                    Glide.with(this).load(albumURI).apply(requestOptions).into(photo);
                     realpath = getRealPathFromURI(albumURI);
                 }
                 break;
@@ -408,3 +381,4 @@ public class WritePost extends AppCompatActivity {
         }
     }
 }
+
