@@ -20,12 +20,12 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-
 import com.example.user.outstagram.Login.Login;
 import com.example.user.outstagram.Login.UserItem;
 import com.example.user.outstagram.MyPost.Account_photo_edit;
 import com.example.user.outstagram.MyPost.MyPostItem;
 import com.example.user.outstagram.MyPost.MyPostItemAdapter;
+import com.example.user.outstagram.MyPost.NicknameEdit;
 import com.example.user.outstagram.MyPost.WritePost;
 import com.example.user.outstagram.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +35,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +55,7 @@ public class Fragment_Account extends Fragment {
     private List<MyPostItem> itemList = new ArrayList<>();
     RecyclerView recyclerView;
     String stNickname, stPhoto;
-    Button write;
+    Button write, nickname_edit;
     ImageView account_edit;
 
     @Nullable
@@ -63,6 +65,7 @@ public class Fragment_Account extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
         database = FirebaseDatabase.getInstance();
 
         Unickname = view.findViewById(R.id.Unickname);
@@ -73,6 +76,7 @@ public class Fragment_Account extends Fragment {
         follower = view.findViewById(R.id.follower);
         following = view.findViewById(R.id.following);
         account_edit = view.findViewById(R.id.account_edit);
+        nickname_edit = view.findViewById(R.id.nickname_edit);
 
         write = view.findViewById(R.id.write);
         write.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +87,7 @@ public class Fragment_Account extends Fragment {
             }
         });
 
+
         try {
             sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
             stUid = sharedPreferences.getString("Uid", "");
@@ -90,7 +95,6 @@ public class Fragment_Account extends Fragment {
 
         }
         try {
-
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference();
             myRef.child("users").child(stUid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -98,9 +102,17 @@ public class Fragment_Account extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     UserItem userItem = dataSnapshot.getValue(UserItem.class);
 
-                    Glide.with(getActivity()).load(userItem.getPhoto()).into(Uphoto);
+                    try {
+                        Glide.with(getActivity()).load(userItem.getPhoto()).into(Uphoto);
+                    } catch (NullPointerException e) {
+                        Uphoto.setImageResource(R.drawable.account);
+                    }
+                    String nickname = userItem.getNickname();
+                    if (nickname.isEmpty()){
+                        Unickname.setText("닉네임 작성");
+                        Unickname.setTextColor(getContext().getColor(R.color.RED));
+                    }else Unickname.setText(userItem.getNickname());
                     Uname.setText(userItem.getName());
-                    Unickname.setText(userItem.getNickname());
                     Uemail.setText(userItem.getEmail());
                     follower.setText(String.valueOf(userItem.follower_count));
                     following.setText(String.valueOf(userItem.following_count));
@@ -150,7 +162,7 @@ public class Fragment_Account extends Fragment {
         account_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                PopupMenu popupMenu = new PopupMenu( getContext() ,account_edit);
+                PopupMenu popupMenu = new PopupMenu(getContext(), account_edit);
                 popupMenu.inflate(R.menu.account_edit);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -158,13 +170,18 @@ public class Fragment_Account extends Fragment {
                         switch (menuItem.getItemId()) {
                             case R.id.account_photo_edit:
                                 Intent intent = new Intent(getActivity(), Account_photo_edit.class);
-                                intent.putExtra("uid",stUid);
+                                intent.putExtra("uid", stUid);
                                 startActivity(intent);
                                 break;
                             case R.id.logout:
                                 mAuth.signOut();
                                 startActivity(new Intent(getActivity(), Login.class));
                                 getActivity().finish();
+                            case R.id.nickname_edit:
+                                Intent intent1 = new Intent(getActivity(), NicknameEdit.class);
+                                startActivity(intent1);
+                                break;
+
                         }
                         return false;
                     }
@@ -174,6 +191,18 @@ public class Fragment_Account extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (user != null) {
+
+        } else {
+            Intent intent = new Intent(getContext(), Login.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
     }
 
 }

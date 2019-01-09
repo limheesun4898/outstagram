@@ -67,7 +67,6 @@ public class MyPostItemAdapter extends RecyclerView.Adapter<MyPostItemAdapter.Vi
                 intent.putExtra("formatDate",item.getFormatDate());
                 intent.putExtra("starCount",item.getStarCount());
                 context.startActivity(intent);
-
             }
         });
 

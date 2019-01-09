@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.example.user.outstagram.Fragment.BottomNavigationViewHelper;
 import com.example.user.outstagram.Fragment.Fragment_Account;
 import com.example.user.outstagram.Fragment.Fragment_Camera;
 import com.example.user.outstagram.Fragment.Fragment_Home;
@@ -24,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
@@ -38,14 +38,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
-        if (user != null) {
-
-        } else {
+        if (user == null) {
             Intent intent = new Intent(MainActivity.this, Login.class);
             startActivity(intent);
             finish();
+        } else {
         }
     }
 

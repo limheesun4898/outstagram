@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nickname_edit"
+        android:title="닉네임 입력" />
     <item
         android:id="@+id/account_photo_edit"
         android:title="프로필 사진 변경" />
@@ -7,4 +11,5 @@
     <item
         android:id="@+id/logout"
         android:title="로그아웃" />
+
 </menu>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyPost.NicknameEdit"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="start"
+        android:paddingLeft="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="outstagram"
+        android:textColor="#000"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="닉네임"
+        android:inputType="textPersonName"
+        android:textColorHint="#42000000"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+    <TextView
+        android:id="@+id/check"
+        android:text="이미 있는 닉네임입니다."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="17dp"
+        android:textColor="#ec0202"
+        android:textSize="16dp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:weightSum="10">
+
+        <Button
+            android:id="@+id/findbtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="확인"
+            android:textColor="@color/colorAccent"
+            android:textSize="16dp" />
+    </LinearLayout>
+</LinearLayout>

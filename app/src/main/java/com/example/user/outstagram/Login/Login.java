@@ -1,11 +1,13 @@
 package com.example.user.outstagram.Login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
     DatabaseReference myRef;
     String name, email, photoUrl;
+    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +94,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         Google_Signin_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
+
             }
         });
 
@@ -144,9 +150,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
@@ -182,16 +188,17 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             email = user.getEmail();
                             photoUrl = "https://firebasestorage.googleapis.com/v0/b/how-about-a-cafe.appspot.com/o/users%2Faccount.png?alt=media&token=187d46ea-019f-487f-97b6-3a2305272630";
                             String following = "0";
-                            String followers ="0";
+                            String followers = "0";
                             String posts = "0";
                             //DB에 데이터 저장
                             Hashtable<String, String> profile = new Hashtable<String, String>();
                             profile.put("name", name);
                             profile.put("email", email);
                             profile.put("photo", photoUrl);
-                            profile.put("following",following);
+                            profile.put("nickname", "");
+                            profile.put("following", following);
                             profile.put("followers", followers);
-                            profile.put("posts",posts);
+                            profile.put("posts", posts);
                             myRef.child(user.getUid()).setValue(profile);
 
                             startActivity(new Intent(Login.this, MainActivity.class));
@@ -221,6 +228,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 Intent intent = new Intent(Login.this, Signup.class);
                 startActivity(intent);
                 break;
+
+
         }
     }
     //https://isjang98.github.io/blog/Firebase-Authentication 참고 사이트

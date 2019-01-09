@@ -44,7 +44,8 @@
         <activity android:name=".UserPost.UserAccount" />
         <activity android:name=".UserPost.UserPost" />
         <activity android:name=".MyPost.EditActivity" />
-        <activity android:name=".MyPost.Account_photo_edit"></activity>
+        <activity android:name=".MyPost.Account_photo_edit" />
+        <activity android:name=".MyPost.NicknameEdit"></activity>
     </application>
 
 </manifest>
