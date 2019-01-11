@@ -72,7 +72,6 @@ public class WritePost extends AppCompatActivity {
     EditText posts;
     Button uplode;
     Context context = this;
-    int count=0;
 
     long now = System.currentTimeMillis();
     Date date = new Date(now);

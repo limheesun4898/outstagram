@@ -177,6 +177,7 @@ public class Fragment_Account extends Fragment {
                                 mAuth.signOut();
                                 startActivity(new Intent(getActivity(), Login.class));
                                 getActivity().finish();
+                                break;
                             case R.id.nickname_edit:
                                 Intent intent1 = new Intent(getActivity(), NicknameEdit.class);
                                 startActivity(intent1);

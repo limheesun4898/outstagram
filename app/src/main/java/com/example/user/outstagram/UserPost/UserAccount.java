@@ -161,7 +161,7 @@ public class UserAccount extends AppCompatActivity {
                 } else {
                     //팔로우 누름~~
                     p.follower_count = p.follower_count + 1;
-                    p.follower.put(auth.getCurrentUser().getUid(), true);
+                    p.follower.put(auth.getCurrentUser().getUid(),true);
 
                 }
                 mutableData.setValue(p);
